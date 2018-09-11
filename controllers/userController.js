@@ -3,6 +3,7 @@ var express = require('express');
 var url = require('url');
 var router = express.Router();
 var UserModel = require('../models/UserModel');
+var QuesModel = require('../models/QuesModel');
 
 router.post('/saveUser', function (req, res, next) {
     var userModel = new UserModel(req.body);
@@ -16,87 +17,56 @@ router.post('/saveUser', function (req, res, next) {
     });
 });
 
-router.get('/tags', function (req, res, next) {
-    VideoInfo.find({ status: "A" }, { tags: 1, status: 1 },function (err, data) {  
+router.post('/saveQues', function (req, res, next) {
+    var quesModel = new QuesModel(req.body);
+    quesModel.save(function (err,data) {
+        console.log(data);
         if (err) {
-            res.status(404).send(err);
-            return;
+            console.log(err);
+        } else {
+            res.send({ message: "saved" })
         }
-        const dataArr = data.map(function (v) {
-            return v['tags'];
-        });
-        const mergedArr = [].concat.apply([], dataArr);
-        const uniqueArray = mergedArr.filter(function (item, pos) {
-            return mergedArr.indexOf(item) === pos;
-        });
-        res.send(uniqueArray);
     });
 });
 
-router.get('/videos', function (req, res, next) {
-    var url_parts = url.parse(req.url, true);
-    var query = url_parts.query.tag;
-    var queryId = url_parts.query._id;
-    if(query == ''){
-        VideoInfo.find({ 'status': 'A' },function (err, data) {
-            if (err) {
-                res.status(404).send(err);
-                return;
-            }
-            res.send(data);
-        });
-    }
-    else if (queryId != undefined) {
-        VideoInfo.find({ "_id": queryId, 'status': 'A' }, function (err, data) {
-            if (err) {
-                res.status(404).send(err);
-                return;
-            }
-            res.send(data);
-        });
-    }
-    else{
-        VideoInfo.find({ "tags": query, 'status': 'A' }, function (err, data) {
-            if (err) {
-                res.status(404).send(err);
-                return;
-            }
-            res.send(data);
-        });
-    }    
+router.get('/getQues', function (req, res, next) {
+    QuesModel.find({},function (err, data) {  
+        if (err) {
+            res.status(404).send(err);
+            return;
+        }        
+        res.send(data);
+    });
 });
 
-router.put('/videos', function (req, res, next) {
-    VideoInfo.update({ '_id': req.body._id }, {
+router.put('/updateUser', function (req, res, next) {
+    UserModel.update({ '_id': req.body._id }, {
         '$set': {
-            url: req.body.url,
-            tags: req.body.tags,
-            time: req.body.time,
+            correctAns: req.body.correctAns,
+            incorrectAns: req.body.incorrectAns,
+            score: req.body.score,
         }
     }, function (err, doc) {
         if (err) {
             res.status(404).send(err);
             return;
         }
-        res.status(200).send({ message: "updated" })
+        res.status(200).send({ message: "updated",id : req.body._id })
     })
 });
 
-router.delete('/videos', function (req, res, next) {
-    var url_parts = url.parse(req.url, true);
-    var queryId = url_parts.query._id;
-    VideoInfo.findOneAndUpdate({ '_id': queryId }, {
-        '$set': {
-            status: "I",
-        }
-    }, function (err, doc) {
+
+router.post('/getResult', function (req, res, next) {
+    console.log(req.body);
+    UserModel.find({ '_id': req.body.id },function (err, data) {  
         if (err) {
             res.status(404).send(err);
             return;
-        }
-        res.status(200).send({ message: "deleted" })
-    })
+        }        
+        res.send(data);
+    });
 });
+
 
 router.get('/test', function (req, res, next) {
     console.log('api is running');
