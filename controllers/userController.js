@@ -5,6 +5,7 @@ var router = express.Router();
 var UserModel = require('../models/UserModel');
 var QuesModel = require('../models/QuesModel');
 
+// save user information
 router.post('/saveUser', function (req, res, next) {
     var userModel = new UserModel(req.body);
     userModel.save(function (err,data) {
@@ -17,6 +18,7 @@ router.post('/saveUser', function (req, res, next) {
     });
 });
 
+// save questions added by admin
 router.post('/saveQues', function (req, res, next) {
     var quesModel = new QuesModel(req.body);
     quesModel.save(function (err,data) {
@@ -29,6 +31,7 @@ router.post('/saveQues', function (req, res, next) {
     });
 });
 
+// retreive all questions
 router.get('/getQues', function (req, res, next) {
     QuesModel.find({},function (err, data) {  
         if (err) {
@@ -39,6 +42,7 @@ router.get('/getQues', function (req, res, next) {
     });
 });
 
+// update user detail quiz details
 router.put('/updateUser', function (req, res, next) {
     UserModel.update({ '_id': req.body._id }, {
         '$set': {
@@ -55,7 +59,7 @@ router.put('/updateUser', function (req, res, next) {
     })
 });
 
-
+// get quiz result 
 router.post('/getResult', function (req, res, next) {
     console.log(req.body);
     UserModel.find({ '_id': req.body.id },function (err, data) {  
@@ -67,7 +71,7 @@ router.post('/getResult', function (req, res, next) {
     });
 });
 
-
+// to test the api
 router.get('/test', function (req, res, next) {
     console.log('api is running');
     res.send('Api is running');

@@ -1,8 +1,6 @@
 var mongoose = require('mongoose');
 var express = require('express');
 var app = express();
-//var videoInfo = require("./controllers/videoInfoController.js");
-var adminController = require("./controllers/adminController.js");
 var userController = require("./controllers/userController.js");
 mongoose.Promise = global.Promise;
 
@@ -21,5 +19,4 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-app.use('/admin', adminController);
-app.use('/user', userController);
+app.use('/user', userController);   //controller
